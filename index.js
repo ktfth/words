@@ -22,3 +22,44 @@ function gridLimit(l) {
   return out;
 }
 assert.equal(gridLimit(bag), 9);
+function alphabet() {
+  let out = [];
+  for (let i = 97, l = 122; i <= l; i += 1) {
+    out.push(String.fromCharCode(i));
+  }
+  return out;
+}
+function randint(n) {
+  return Math.round(Math.random() * n);
+}
+function generateLine(n) {
+  let out = new Array(n).fill(0);
+  let _alphabet = alphabet();
+  out = out.map(v => _alphabet[randint(_alphabet.length - 1)]);
+  return out;
+}
+assert.equal(generateLine(gridLimit(bag)).length, 9);
+for (let chr of generateLine(gridLimit(bag))) {
+  let alphabet = [];
+  for (let i = 97, l = 122; i <= l; i += 1) {
+    alphabet.push(String.fromCharCode(i));
+  }
+  assert.ok(alphabet.indexOf(chr) > -1);
+}
+function generateColumn(n) {
+  let out = new Array(n).fill(0);
+  out = out.map(v => generateLine(gridLimit(bag)));
+  return out;
+}
+assert.equal(generateColumn(gridLimit(bag)).length, 9);
+
+for (let line of generateColumn(gridLimit(bag))) {
+  for (let i in line) {
+    let chr = line[i];
+    if (i == line.length - 1) {
+      process.stdout.write(`${chr}\n`);
+    } else {
+      process.stdout.write(`${chr} | `);
+    }
+  }
+}
