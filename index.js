@@ -73,27 +73,28 @@ function showGrid(g=generateColumn(gridLimit(bag))) {
 // x - horizontal axis
 // y - vertical axis
 // o - orientation
-function placeCells(w, n, x, y, o) {
+// t - trace
+function placeCells(w, n, x, y, o, t) {
   let out = [];
-  if (w.length <= n && o === 'horizontal') {
+  if (w.length <= n && o === 'horizontal' && t === 'left-to-right') {
     for (let i = 0; i < w.length; i += 1) {
       out.push({ value: w[i], x: i, y: y });
     }
-  } else if (w.length <= n && o === 'vertival') {
+  } else if (w.length <= n && o === 'vertival' && t === 'top-to-down') {
     for (let i = 0; i < w.length; i += 1) {
       out.push({ value: w[i], x: x, y: i });
     }
   }
   return out;
 }
-assert.deepEqual(placeCells('apple', 9, 0, 0, 'horizontal'), [
+assert.deepEqual(placeCells('apple', 9, 0, 0, 'horizontal', 'left-to-right'), [
   { value: 'a', x: 0, y: 0 },
   { value: 'p', x: 1, y: 0 },
   { value: 'p', x: 2, y: 0 },
   { value: 'l', x: 3, y: 0 },
   { value: 'e', x: 4, y: 0 },
 ], 'horizontal placement');
-assert.deepEqual(placeCells('apple', 9, 0, 0, 'vertival'), [
+assert.deepEqual(placeCells('apple', 9, 0, 0, 'vertival', 'top-to-down'), [
   { value: 'a', x: 0, y: 0 },
   { value: 'p', x: 0, y: 1 },
   { value: 'p', x: 0, y: 2 },
