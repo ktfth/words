@@ -80,6 +80,11 @@ function placeCells(w, n, x, y, o, t) {
     for (let i = 0; i < w.length; i += 1) {
       out.push({ value: w[i], x: i, y: y });
     }
+  } else if (w.length <= n && o === 'horizontal' && t === 'right-to-left') {
+    for (let i = w.length - 1, j = 0; i >= 0; i -= 1) {
+      out.push({ value: w[i], x: j, y: y });
+      j += 1;
+    }
   } else if (w.length <= n && o === 'vertival' && t === 'top-to-down') {
     for (let i = 0; i < w.length; i += 1) {
       out.push({ value: w[i], x: x, y: i });
@@ -101,3 +106,10 @@ assert.deepEqual(placeCells('apple', 9, 0, 0, 'vertival', 'top-to-down'), [
   { value: 'l', x: 0, y: 3 },
   { value: 'e', x: 0, y: 4 },
 ], 'vertical placement');
+assert.deepEqual(placeCells('apple', 9, 0, 0, 'horizontal', 'right-to-left'), [
+  { value: 'e', x: 0, y: 0 },
+  { value: 'l', x: 1, y: 0 },
+  { value: 'p', x: 2, y: 0 },
+  { value: 'p', x: 3, y: 0 },
+  { value: 'a', x: 4, y: 0 },
+], 'horizontal placement right to left');
