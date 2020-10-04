@@ -53,13 +53,16 @@ function generateColumn(n) {
 }
 assert.equal(generateColumn(gridLimit(bag)).length, 9);
 
-for (let line of generateColumn(gridLimit(bag))) {
-  for (let i in line) {
-    let chr = line[i];
-    if (i == line.length - 1) {
-      process.stdout.write(`${chr}\n`);
-    } else {
-      process.stdout.write(`${chr} | `);
+function showGrid(g=generateColumn(gridLimit(bag))) {
+  for (let line of g) {
+    for (let i in line) {
+      let chr = line[i];
+      if (i == line.length - 1) {
+        process.stdout.write(`${chr}\n`);
+      } else {
+        process.stdout.write(`${chr} | `);
+      }
     }
   }
 }
+// showGrid()
