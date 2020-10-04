@@ -89,6 +89,11 @@ function placeCells(w, n, x, y, o, t) {
     for (let i = 0; i < w.length; i += 1) {
       out.push({ value: w[i], x: x, y: i });
     }
+  } else if (w.length <= n && o === 'vertical' && t === 'down-to-top') {
+    for (let i = w.length - 1, j = 0; i >= 0; i -= 1) {
+      out.push({ value: w[i], x: x, y: j });
+      j += 1;
+    }
   }
   return out;
 }
@@ -113,3 +118,10 @@ assert.deepEqual(placeCells('apple', 9, 0, 0, 'horizontal', 'right-to-left'), [
   { value: 'p', x: 3, y: 0 },
   { value: 'a', x: 4, y: 0 },
 ], 'horizontal placement right to left');
+assert.deepEqual(placeCells('apple', 9, 0, 0, 'vertical', 'down-to-top'), [
+  { value: 'e', x: 0, y: 0 },
+  { value: 'l', x: 0, y: 1 },
+  { value: 'p', x: 0, y: 2 },
+  { value: 'p', x: 0, y: 3 },
+  { value: 'a', x: 0, y: 4 },
+], 'vertical placement down to top');
