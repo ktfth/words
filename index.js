@@ -66,3 +66,37 @@ function showGrid(g=generateColumn(gridLimit(bag))) {
   }
 }
 // showGrid()
+
+// place cells
+// w - word
+// n - grid limit
+// x - horizontal axis
+// y - vertical axis
+// o - orientation
+function placeCells(w, n, x, y, o) {
+  let out = [];
+  if (w.length <= n && o === 'horizontal') {
+    for (let i = 0; i < w.length; i += 1) {
+      out.push({ value: w[i], x: i, y: y });
+    }
+  } else if (w.length <= n && o === 'vertival') {
+    for (let i = 0; i < w.length; i += 1) {
+      out.push({ value: w[i], x: x, y: i });
+    }
+  }
+  return out;
+}
+assert.deepEqual(placeCells('apple', 9, 0, 0, 'horizontal'), [
+  { value: 'a', x: 0, y: 0 },
+  { value: 'p', x: 1, y: 0 },
+  { value: 'p', x: 2, y: 0 },
+  { value: 'l', x: 3, y: 0 },
+  { value: 'e', x: 4, y: 0 },
+], 'horizontal placement');
+assert.deepEqual(placeCells('apple', 9, 0, 0, 'vertival'), [
+  { value: 'a', x: 0, y: 0 },
+  { value: 'p', x: 0, y: 1 },
+  { value: 'p', x: 0, y: 2 },
+  { value: 'l', x: 0, y: 3 },
+  { value: 'e', x: 0, y: 4 },
+], 'vertical placement');
