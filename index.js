@@ -1,4 +1,5 @@
 'use strict';
+const chalk = require('chalk');
 const assert = require('assert');
 
 const GS = 10; // Grid span
@@ -157,32 +158,32 @@ let grid = generateColumn(gridLimit(bag) + GS, gridLimit(bag) + GS);
 let x = 0;
 let y = 0;
 bag.forEach(w => {
+  let gridSize = gridLimit(bag) + GS;
+  let gs = gridSize;
   let orientations = ['horizontal', 'vertical', 'transversal'];
   let htTraces = ['left-to-right', 'right-to-left'];
   let vTraces = ['top-to-down', 'down-to-top'];
   let orientation = () => orientations[Math.max(0, Math.round(Math.random() * orientations.length - 1))];
+  let htTrace = () => htTraces[Math.max(0, Math.round(Math.random() * (htTraces.length - 1)))];
+  let vTrace = () => vTraces[Math.max(0, Math.round(Math.random() * (vTraces.length - 1)))];
   let o = orientation();
-  let htTrace = () => htTraces[Math.max(0, Math.round(Math.random() * htTraces.length - 1))];
-  let vTrace = () => vTraces[Math.max(0, Math.round(Math.random() * vTraces.length - 1))];
   let t = null;
   if (o === 'horizontal' || o === 'transversal') {
     t = htTrace();
   } else if (o === 'vertical') {
     t = vTrace();
   }
+  x = y = Math.max(0, randint(gs));
+  console.log((new Array(61)).fill('=').join(''));
   console.log(w, o, t, x, y);
-  placeCells(
-    w,
-    gridLimit(bag) + GS,
-    x,
-    y,
-    o,
-    t
-  ).forEach(v => {
-    grid[v['y']][v['x']] = v['value'];
-  });
-  x += 1;
-  y += 1;
+  console.log((new Array(61)).fill('=').join(''));
+  placeCells(w, gs, x, y, o, t)
+    .forEach(v => {
+      if (process.env.DEBUG === 'WORDS') {
+        grid[v['y']][v['x']] = chalk.green(v['value'].toUpperCase());
+      }
+      grid[v['y']][v['x']] = v['value'];
+    });
 });
 
 showGrid(grid);
