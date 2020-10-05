@@ -46,9 +46,9 @@ for (let chr of generateLine(gridLimit(bag))) {
   }
   assert.ok(alphabet.indexOf(chr) > -1);
 }
-function generateColumn(n) {
+function generateColumn(n, m=gridLimit(bag)) {
   let out = new Array(n).fill(0);
-  out = out.map(v => generateLine(gridLimit(bag)));
+  out = out.map(v => generateLine(m));
   return out;
 }
 assert.equal(generateColumn(gridLimit(bag)).length, 6);
@@ -149,20 +149,33 @@ assert.deepEqual(placeCells('apple', 9, 0, 0, 'transversal', 'right-to-left'), [
   { value: 'a', x: 4, y: 4 },
 ], 'transversal placement right to left');
 
-let grid = generateColumn(gridLimit(bag));
+let grid = generateColumn(gridLimit(bag) + 5, gridLimit(bag) + 5);
 
 // placing fixed words from bag
 let x = 0;
 let y = 0;
 bag.forEach(w => {
-  console.log(w);
+  let orientations = ['horizontal', 'vertical', 'transversal'];
+  let htTraces = ['left-to-right', 'right-to-left'];
+  let vTraces = ['top-to-down', 'down-to-top'];
+  let orientation = () => orientations[Math.max(0, Math.round(Math.random() * orientations.length - 1))];
+  let o = orientation();
+  let htTrace = () => htTraces[Math.max(0, Math.round(Math.random() * htTraces.length - 1))];
+  let vTrace = () => vTraces[Math.max(0, Math.round(Math.random() * vTraces.length - 1))];
+  let trace = null;
+  if (o === 'horizontal' || o === 'transversal') {
+    trace = htTrace();
+  } else if (o === 'vertical') {
+    trace = vTrace();
+  }
+  console.log(w, o, x, y);
   placeCells(
     w,
-    gridLimit(bag),
+    gridLimit(bag) + 5,
     x,
     y,
-    'horizontal',
-    'left-to-right'
+    o,
+    trace
   ).forEach(v => {
     grid[v['y']][v['x']] = v['value'];
   });
