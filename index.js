@@ -181,8 +181,9 @@ bag.forEach(w => {
     .forEach(v => {
       if (process.env.DEBUG === 'WORDS') {
         grid[v['y']][v['x']] = chalk.green(v['value'].toUpperCase());
+      } else {
+        grid[v['y']][v['x']] = v['value'];
       }
-      grid[v['y']][v['x']] = v['value'];
     });
 });
 
