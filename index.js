@@ -1,6 +1,8 @@
 'use strict';
 const assert = require('assert');
 
+const GS = 10; // Grid span
+
 let bag = [
   'apple',
   'grape',
@@ -149,7 +151,7 @@ assert.deepEqual(placeCells('apple', 9, 0, 0, 'transversal', 'right-to-left'), [
   { value: 'a', x: 4, y: 4 },
 ], 'transversal placement right to left');
 
-let grid = generateColumn(gridLimit(bag) + 5, gridLimit(bag) + 5);
+let grid = generateColumn(gridLimit(bag) + GS, gridLimit(bag) + GS);
 
 // placing fixed words from bag
 let x = 0;
@@ -162,20 +164,20 @@ bag.forEach(w => {
   let o = orientation();
   let htTrace = () => htTraces[Math.max(0, Math.round(Math.random() * htTraces.length - 1))];
   let vTrace = () => vTraces[Math.max(0, Math.round(Math.random() * vTraces.length - 1))];
-  let trace = null;
+  let t = null;
   if (o === 'horizontal' || o === 'transversal') {
-    trace = htTrace();
+    t = htTrace();
   } else if (o === 'vertical') {
-    trace = vTrace();
+    t = vTrace();
   }
-  console.log(w, o, x, y);
+  console.log(w, o, t, x, y);
   placeCells(
     w,
-    gridLimit(bag) + 5,
+    gridLimit(bag) + GS,
     x,
     y,
     o,
-    trace
+    t
   ).forEach(v => {
     grid[v['y']][v['x']] = v['value'];
   });
