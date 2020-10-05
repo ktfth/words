@@ -5,7 +5,7 @@ let bag = [
   'apple',
   'grape',
   'orange',
-  'pine apple'
+  'banana'
 ]
 assert.equal(bag.length, 4);
 function treatWord(v) {
@@ -21,7 +21,7 @@ function gridLimit(l) {
     .forEach(v => out = Math.max(out, v.length));
   return out;
 }
-assert.equal(gridLimit(bag), 9);
+assert.equal(gridLimit(bag), 6);
 function alphabet() {
   let out = [];
   for (let i = 97, l = 122; i <= l; i += 1) {
@@ -38,7 +38,7 @@ function generateLine(n) {
   out = out.map(v => _alphabet[randint(_alphabet.length - 1)]);
   return out;
 }
-assert.equal(generateLine(gridLimit(bag)).length, 9);
+assert.equal(generateLine(gridLimit(bag)).length, 6);
 for (let chr of generateLine(gridLimit(bag))) {
   let alphabet = [];
   for (let i = 97, l = 122; i <= l; i += 1) {
@@ -51,7 +51,7 @@ function generateColumn(n) {
   out = out.map(v => generateLine(gridLimit(bag)));
   return out;
 }
-assert.equal(generateColumn(gridLimit(bag)).length, 9);
+assert.equal(generateColumn(gridLimit(bag)).length, 6);
 
 function showGrid(g=generateColumn(gridLimit(bag))) {
   for (let line of g) {
@@ -148,3 +148,26 @@ assert.deepEqual(placeCells('apple', 9, 0, 0, 'transversal', 'right-to-left'), [
   { value: 'p', x: 3, y: 3 },
   { value: 'a', x: 4, y: 4 },
 ], 'transversal placement right to left');
+
+let grid = generateColumn(gridLimit(bag));
+
+// placing fixed words from bag
+let x = 0;
+let y = 0;
+bag.forEach(w => {
+  console.log(w);
+  placeCells(
+    w,
+    gridLimit(bag),
+    x,
+    y,
+    'horizontal',
+    'left-to-right'
+  ).forEach(v => {
+    grid[v['y']][v['x']] = v['value'];
+  });
+  x += 1;
+  y += 1;
+});
+
+showGrid(grid);
