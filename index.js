@@ -179,7 +179,6 @@ bag.forEach(w => {
     console.log((new Array(61)).fill('=').join(''));
     console.log(w, o, t, x, y);
     console.log((new Array(61)).fill('=').join(''));
-    if ()
     placeCells(w, gs, x, y, o, t)
       .forEach(v => {
         // if (grid[v['y']][v['x']] !== v['value']) {
