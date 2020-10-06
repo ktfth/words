@@ -152,6 +152,22 @@ assert.deepEqual(placeCells('apple', 9, 0, 0, 'transversal', 'right-to-left'), [
   { value: 'a', x: 4, y: 4 },
 ], 'transversal placement right to left');
 
+function collide(a, b) {
+  return (a.o === b.o && (a.x === b.x && a.y === b.y));
+}
+assert.ok(
+  collide({
+    w: 'apple',
+    x: 0,
+    y: 0,
+    o: 'horizontal'
+  }, {
+    w: 'grape',
+    x: 0,
+    y: 0,
+    o: 'horizontal'
+  }), 'collision not detected');
+
 let grid = generateColumn(gridLimit(bag) + GS, gridLimit(bag) + GS);
 
 // placing fixed words from bag
@@ -181,9 +197,11 @@ bag.forEach(w => {
     console.log((new Array(61)).fill('=').join(''));
     placeCells(w, gs, x, y, o, t)
       .forEach(v => {
-        if (grid[v['y']][v['x']] !== v['value']) {
-          prepareCells();
-        } if (process.env.DEBUG === 'WORDS') {
+        // if (grid[v['y']][v['x']] !== v['value']) {
+        //   prepareCells();
+        // }
+
+        if (process.env.DEBUG === 'WORDS') {
           grid[v['y']][v['x']] = chalk.green(v['value'].toUpperCase());
         } else {
           grid[v['y']][v['x']] = v['value'];
@@ -196,7 +214,6 @@ bag.forEach(w => {
       o: o,
       t: t,
     });
-    console.log(positionedWords);
   }
   prepareCells();
 });
