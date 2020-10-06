@@ -181,10 +181,9 @@ bag.forEach(w => {
     console.log((new Array(61)).fill('=').join(''));
     placeCells(w, gs, x, y, o, t)
       .forEach(v => {
-        // if (grid[v['y']][v['x']] !== v['value']) {
-        //   replaceCells();
-        // }
-        if (process.env.DEBUG === 'WORDS') {
+        if (grid[v['y']][v['x']] !== v['value']) {
+          prepareCells();
+        } if (process.env.DEBUG === 'WORDS') {
           grid[v['y']][v['x']] = chalk.green(v['value'].toUpperCase());
         } else {
           grid[v['y']][v['x']] = v['value'];
@@ -193,7 +192,9 @@ bag.forEach(w => {
     positionedWords.push({
       word: w,
       x: [ x, x + w.length ],
-      y: [ y, y + w.length ]
+      y: [ y, y + w.length ],
+      o: o,
+      t: t,
     });
     console.log(positionedWords);
   }
