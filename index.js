@@ -173,18 +173,32 @@ bag.forEach(w => {
   } else if (o === 'vertical') {
     t = vTrace();
   }
-  x = y = Math.max(0, randint(gs));
-  console.log((new Array(61)).fill('=').join(''));
-  console.log(w, o, t, x, y);
-  console.log((new Array(61)).fill('=').join(''));
-  placeCells(w, gs, x, y, o, t)
-    .forEach(v => {
-      if (process.env.DEBUG === 'WORDS') {
-        grid[v['y']][v['x']] = chalk.green(v['value'].toUpperCase());
-      } else {
-        grid[v['y']][v['x']] = v['value'];
-      }
+  let positionedWords = [];
+  function prepareCells() {
+    x = y = Math.max(0, randint(gs));
+    console.log((new Array(61)).fill('=').join(''));
+    console.log(w, o, t, x, y);
+    console.log((new Array(61)).fill('=').join(''));
+    if ()
+    placeCells(w, gs, x, y, o, t)
+      .forEach(v => {
+        // if (grid[v['y']][v['x']] !== v['value']) {
+        //   replaceCells();
+        // }
+        if (process.env.DEBUG === 'WORDS') {
+          grid[v['y']][v['x']] = chalk.green(v['value'].toUpperCase());
+        } else {
+          grid[v['y']][v['x']] = v['value'];
+        }
+      });
+    positionedWords.push({
+      word: w,
+      x: [ x, x + w.length ],
+      y: [ y, y + w.length ]
     });
+    console.log(positionedWords);
+  }
+  prepareCells();
 });
 
 showGrid(grid);
