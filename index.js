@@ -152,13 +152,43 @@ assert.deepEqual(placeCells('apple', 9, 0, 0, 'transversal', 'right-to-left'), [
   { value: 'a', x: 4, y: 4 },
 ], 'transversal placement right to left');
 
+function range(n=0, m) {
+  let out = [];
+  for (let i = n; i <= m; i += 1) {
+    out.push(i);
+  }
+  return out;
+}
+assert.deepEqual(range(1, 3), [1, 2, 3]);
+assert.deepEqual(range(0, 2), [0, 1, 2]);
+
 function collide(a, b) {
   let out = false;
-  // let hasSameOrientation = a.o === b.o;
-  let hasSameStart = a.x[0] === b.x[0] && a.x[1] === b.x[1];
-  let hasSameEnd = a.y[0] === b.y[0] && a.y[1] === b.y[1];
-  // if (hasSameOrientation && (hasSameStart && hasSameEnd)) {
-  if ((hasSameStart && hasSameEnd)) {
+  let aX = range(a.x[0], a.x[1]);
+  let bX = range(b.x[0], b.x[1]);
+  let aY = range(a.y[0], a.y[1]);
+  let bY = range(b.y[0], b.y[1]);
+  let hasCollisionX = [];
+  let hasCollisionY = [];
+  if (aX.length > bX.length) {
+    aX.forEach((v, i) => {
+      if (bX[i] === v) hasCollisionX.push(true);
+    });
+  } else if (bX.length > aX.length) {
+    bX.forEach((v, i) => {
+      if (aX[i] === v) hasCollisionX.push(true);
+    });
+  } if (aY.length > bY.length) {
+    aY.forEach((v, i) => {
+      if (bY[i] === v) hasCollisionY.push(true);
+    });
+  } else if (bY.length > aY.length) {
+    bY.forEach((v, i) => {
+      if (aY[i] === v) hasCollisionY.push(true);
+    });
+  }
+
+  if (hasCollisionX.length > 0 || hasCollisionY.length > 0) {
     out = true;
   }
   return out;
@@ -177,12 +207,41 @@ assert.ok(
   }),
   'collision not detected'
 );
+assert.ok(
+  collide({
+    w: 'apple',
+    x: [0, 'apple'.length - 1],
+    y: [0, 'apple'.length - 1],
+    o: 'transversal'
+  }, {
+    w: 'banana',
+    x: [0, 'banana'.length - 1],
+    y: [3, 3],
+    o: 'horizontal',
+  }),
+  'collision not detected for transversal'
+);
+assert.ok(
+  collide({
+    w: 'apple',
+    x: [1, 1],
+    y: [1, 'apple'.length - 1],
+    o: 'vertical',
+  }, {
+    w: 'grape',
+    x: [2, 'grape'.length - 1],
+    y: [2, 2],
+    o: 'horizontal'
+  }),
+  'collision not detected'
+);
 
 let grid = generateColumn(gridLimit(bag) + GS, gridLimit(bag) + GS);
 
 // placing fixed words from bag
 let x = 0;
 let y = 0;
+let positionedWords = [];
 bag.forEach(w => {
   let gridSize = gridLimit(bag) + GS;
   let gs = gridSize;
@@ -199,12 +258,8 @@ bag.forEach(w => {
   } else if (o === 'vertical') {
     t = vTrace();
   }
-  let positionedWords = [];
   function prepareCells() {
     x = y = Math.max(0, randint(gs));
-    console.log((new Array(61)).fill('=').join(''));
-    console.log(w, o, t, x, y);
-    console.log((new Array(61)).fill('=').join(''));
     let hasCollision = false;
     if (o === 'horizontal') {
       hasCollision = positionedWords
@@ -237,6 +292,14 @@ bag.forEach(w => {
           });
         }).length > 0;
     } if (o === 'transversal') {
+      let _x = [];
+      let _y = [];
+      for (let i = 0; i < w.length; i += 1) {
+        _x.push(i);
+      }
+      for (let i = 0; i < w.length; i += 1) {
+        _y.push(i);
+      }
       hasCollision = positionedWords
         .filter(pw => {
           return collide({
@@ -246,17 +309,19 @@ bag.forEach(w => {
             o: pw.o
           }, {
             word: w,
-            x: [x, w.length - 1],
-            y: [y, w.length - 1],
+            x: _x,
+            y: _y,
             o: o
           });
         }).length > 0;
     }
 
+    console.log(w, x, y, o, hasCollision);
+
     if (hasCollision) {
       return prepareCells();
     }
-    
+
     placeCells(w, gs, x, y, o, t)
       .forEach(v => {
         if (process.env.DEBUG === 'WORDS') {
@@ -271,8 +336,8 @@ bag.forEach(w => {
       });
     positionedWords.push({
       word: w,
-      x: [ x, x + w.length ],
-      y: [ y, y + w.length ],
+      x: [ x, x + w.length - 1 ],
+      y: [ y, y + w.length - 1 ],
       o: o,
       t: t,
     });
