@@ -8,7 +8,7 @@ let bag = [
   'apple',
   'grape',
   'orange',
-  'banana'
+  'banana',
 ]
 assert.equal(bag.length, 4);
 function treatWord(v) {
@@ -153,20 +153,29 @@ assert.deepEqual(placeCells('apple', 9, 0, 0, 'transversal', 'right-to-left'), [
 ], 'transversal placement right to left');
 
 function collide(a, b) {
-  return (a.o === b.o && (a.x === b.x && a.y === b.y));
+  let out = false;
+  let hasSameOrientation = a.o === b.o;
+  let hasSameStart = a.x[0] === b.x[0] && a.x[1] === b.x[1];
+  let hasSameEnd = a.y[0] === b.y[0] && a.y[1] === b.y[1];
+  if (hasSameOrientation && (hasSameStart && hasSameEnd)) {
+    out = true;
+  }
+  return out;
 }
 assert.ok(
   collide({
     w: 'apple',
-    x: 0,
-    y: 0,
+    x: [0, 'apple'.length - 1],
+    y: [0, 0],
     o: 'horizontal'
   }, {
     w: 'grape',
-    x: 0,
-    y: 0,
+    x: [0, 'grape'.length - 1],
+    y: [0, 0],
     o: 'horizontal'
-  }), 'collision not detected');
+  }),
+  'collision not detected'
+);
 
 let grid = generateColumn(gridLimit(bag) + GS, gridLimit(bag) + GS);
 
@@ -197,9 +206,57 @@ bag.forEach(w => {
     console.log((new Array(61)).fill('=').join(''));
     placeCells(w, gs, x, y, o, t)
       .forEach(v => {
-        // if (grid[v['y']][v['x']] !== v['value']) {
-        //   prepareCells();
-        // }
+        let hasCollision = false;
+        if (o === 'horizontal') {
+          hasCollision = positionedWords
+            .filter(pw => {
+              return collide({
+                word: pw.word,
+                x: pw.x,
+                y: pw.y,
+                o: pw.o
+              }, {
+                word: w,
+                x: [x, w.length - 1],
+                y: [y, y],
+                o: o
+              });
+            }).length > 0;
+        } if (o === 'vertical') {
+          hasCollision = positionedWords
+            .filter(pw => {
+              return collide({
+                word: pw.word,
+                x: pw.x,
+                y: pw.y,
+                o: pw.o
+              }, {
+                word: w,
+                x: [x, x],
+                y: [y, w.length - 1],
+                o: o
+              });
+            }).length > 0;
+        } if (o === 'transversal') {
+          hasCollision = positionedWords
+            .filter(pw => {
+              return collide({
+                word: pw.word,
+                x: pw.x,
+                y: pw.y,
+                o: pw.o
+              }, {
+                word: w,
+                x: [x, w.length - 1],
+                y: [y, w.length - 1],
+                o: o
+              });
+            }).length > 0;
+        }
+
+        if (hasCollision) {
+          return prepareCells();
+        }
 
         if (process.env.DEBUG === 'WORDS') {
           grid[v['y']][v['x']] = chalk.green(v['value'].toUpperCase());
