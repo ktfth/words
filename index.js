@@ -154,10 +154,11 @@ assert.deepEqual(placeCells('apple', 9, 0, 0, 'transversal', 'right-to-left'), [
 
 function collide(a, b) {
   let out = false;
-  let hasSameOrientation = a.o === b.o;
+  // let hasSameOrientation = a.o === b.o;
   let hasSameStart = a.x[0] === b.x[0] && a.x[1] === b.x[1];
   let hasSameEnd = a.y[0] === b.y[0] && a.y[1] === b.y[1];
-  if (hasSameOrientation && (hasSameStart && hasSameEnd)) {
+  // if (hasSameOrientation && (hasSameStart && hasSameEnd)) {
+  if ((hasSameStart && hasSameEnd)) {
     out = true;
   }
   return out;
@@ -204,64 +205,68 @@ bag.forEach(w => {
     console.log((new Array(61)).fill('=').join(''));
     console.log(w, o, t, x, y);
     console.log((new Array(61)).fill('=').join(''));
+    let hasCollision = false;
+    if (o === 'horizontal') {
+      hasCollision = positionedWords
+        .filter(pw => {
+          return collide({
+            word: pw.word,
+            x: pw.x,
+            y: pw.y,
+            o: pw.o
+          }, {
+            word: w,
+            x: [x, w.length - 1],
+            y: [y, y],
+            o: o
+          });
+        }).length > 0;
+    } if (o === 'vertical') {
+      hasCollision = positionedWords
+        .filter(pw => {
+          return collide({
+            word: pw.word,
+            x: pw.x,
+            y: pw.y,
+            o: pw.o
+          }, {
+            word: w,
+            x: [x, x],
+            y: [y, w.length - 1],
+            o: o
+          });
+        }).length > 0;
+    } if (o === 'transversal') {
+      hasCollision = positionedWords
+        .filter(pw => {
+          return collide({
+            word: pw.word,
+            x: pw.x,
+            y: pw.y,
+            o: pw.o
+          }, {
+            word: w,
+            x: [x, w.length - 1],
+            y: [y, w.length - 1],
+            o: o
+          });
+        }).length > 0;
+    }
+
+    if (hasCollision) {
+      return prepareCells();
+    }
+    
     placeCells(w, gs, x, y, o, t)
       .forEach(v => {
-        let hasCollision = false;
-        if (o === 'horizontal') {
-          hasCollision = positionedWords
-            .filter(pw => {
-              return collide({
-                word: pw.word,
-                x: pw.x,
-                y: pw.y,
-                o: pw.o
-              }, {
-                word: w,
-                x: [x, w.length - 1],
-                y: [y, y],
-                o: o
-              });
-            }).length > 0;
-        } if (o === 'vertical') {
-          hasCollision = positionedWords
-            .filter(pw => {
-              return collide({
-                word: pw.word,
-                x: pw.x,
-                y: pw.y,
-                o: pw.o
-              }, {
-                word: w,
-                x: [x, x],
-                y: [y, w.length - 1],
-                o: o
-              });
-            }).length > 0;
-        } if (o === 'transversal') {
-          hasCollision = positionedWords
-            .filter(pw => {
-              return collide({
-                word: pw.word,
-                x: pw.x,
-                y: pw.y,
-                o: pw.o
-              }, {
-                word: w,
-                x: [x, w.length - 1],
-                y: [y, w.length - 1],
-                o: o
-              });
-            }).length > 0;
-        }
-
-        if (hasCollision) {
-          return prepareCells();
-        }
-
         if (process.env.DEBUG === 'WORDS') {
-          grid[v['y']][v['x']] = chalk.green(v['value'].toUpperCase());
+          if (grid[v['y']] !== undefined && grid[v['y']][v['x']] !== undefined) {
+            grid[v['y']][v['x']] = chalk.green(v['value'].toUpperCase());
+          }
         } else {
-          grid[v['y']][v['x']] = v['value'];
+          if (grid[v['y']] !== undefined && grid[v['y']][v['x']] !== undefined) {
+            grid[v['y']][v['x']] = v['value'];
+          }
         }
       });
     positionedWords.push({
