@@ -129,6 +129,13 @@ function collide(a, b) {
     });
   });
 
+  aX.forEach((v, vi) => {
+    bY.forEach((w, wi) => {
+      hasCollisionX.push(true);
+      bY = bY.splice(wi, 1);
+    });
+  });
+
   aY.forEach((v, vi) => {
     bY.forEach((w, wi) => {
       if (v === w) {
@@ -137,6 +144,15 @@ function collide(a, b) {
       }
     });
   });
+
+  aY.forEach((v, vi) => {
+    bX.forEach((w, wi) => {
+      if (v === w) {
+        hasCollisionY.push(true);
+        bX = bX.splice(wi, 1);
+      }
+    });
+  })
 
   if (hasCollisionX.length > 0 || hasCollisionY.length > 0) {
     out = true;
@@ -151,6 +167,7 @@ let grid = generateColumn(gridLimit(bag) + GS, gridLimit(bag) + GS);
 let x = 0;
 let y = 0;
 let positionedWords = [];
+let callStackCounter = 0;
 bag.forEach(w => {
   let gridSize = gridLimit(bag) + GS;
   let gs = gridSize;
@@ -160,15 +177,21 @@ bag.forEach(w => {
   let orientation = () => orientations[Math.max(0, Math.round(Math.random() * orientations.length - 1))];
   let htTrace = () => htTraces[Math.max(0, Math.round(Math.random() * (htTraces.length - 1)))];
   let vTrace = () => vTraces[Math.max(0, Math.round(Math.random() * (vTraces.length - 1)))];
-  let o = orientation();
+  let o = null;
   let t = null;
-  if (o === 'horizontal' || o === 'transversal') {
-    t = htTrace();
-  } else if (o === 'vertical') {
-    t = vTrace();
-  }
-  function prepareCells() {
+
+  function randomPos() {
+    o = orientation();
+    if (o === 'horizontal' || o === 'transversal') {
+      t = htTrace();
+    } else if (o === 'vertical') {
+      t = vTrace();
+    }
     x = y = Math.max(0, randint(gs));
+  }
+
+  function prepareCells() {
+    randomPos();
     let hasCollision = false;
     if (o === 'horizontal') {
       hasCollision = positionedWords
@@ -229,9 +252,12 @@ bag.forEach(w => {
       console.log(w, x, y, o, hasCollision);
     }
 
-    if (hasCollision) {
+    if (hasCollision && callStackCounter < 1000) {
+      callStackCounter += 1;
       return prepareCells();
     }
+
+    callStackCounter = 0;
 
     placeCells(w, gs, x, y, o, t)
       .forEach(v => {
