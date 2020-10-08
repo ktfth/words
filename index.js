@@ -10,13 +10,11 @@ let bag = [
   'orange',
   'banana',
 ]
-assert.equal(bag.length, 4);
+exports.bag = bag;
 function treatWord(v) {
   return v.split(' ').join('');
 }
-for (let word in bag) {
-  assert.equal(treatWord(word), word.split(' ').join(''));
-}
+exports.treatWord = treatWord;
 function gridLimit(l) {
   let out = null;
   l
@@ -24,7 +22,7 @@ function gridLimit(l) {
     .forEach(v => out = Math.max(out, v.length));
   return out;
 }
-assert.equal(gridLimit(bag), 6);
+exports.gridLimit = gridLimit;
 function alphabet() {
   let out = [];
   for (let i = 97, l = 122; i <= l; i += 1) {
@@ -41,20 +39,13 @@ function generateLine(n) {
   out = out.map(v => _alphabet[randint(_alphabet.length - 1)]);
   return out;
 }
-assert.equal(generateLine(gridLimit(bag)).length, 6);
-for (let chr of generateLine(gridLimit(bag))) {
-  let alphabet = [];
-  for (let i = 97, l = 122; i <= l; i += 1) {
-    alphabet.push(String.fromCharCode(i));
-  }
-  assert.ok(alphabet.indexOf(chr) > -1);
-}
+exports.generateLine = generateLine;
 function generateColumn(n, m=gridLimit(bag)) {
   let out = new Array(n).fill(0);
   out = out.map(v => generateLine(m));
   return out;
 }
-assert.equal(generateColumn(gridLimit(bag)).length, 6);
+exports.generateColumn = generateColumn;
 
 function showGrid(g=generateColumn(gridLimit(bag))) {
   for (let line of g) {
@@ -174,7 +165,7 @@ function collide(a, b) {
     aX.forEach((v, i) => {
       if (bX[i] === v) hasCollisionX.push(true);
     });
-  } else if (bX.length > aX.length) {
+  } if (bX.length > aX.length) {
     bX.forEach((v, i) => {
       if (aX[i] === v) hasCollisionX.push(true);
     });
@@ -182,7 +173,7 @@ function collide(a, b) {
     aY.forEach((v, i) => {
       if (bY[i] === v) hasCollisionY.push(true);
     });
-  } else if (bY.length > aY.length) {
+  } if (bY.length > aY.length) {
     bY.forEach((v, i) => {
       if (aY[i] === v) hasCollisionY.push(true);
     });
@@ -193,48 +184,48 @@ function collide(a, b) {
   }
   return out;
 }
-assert.ok(
-  collide({
-    w: 'apple',
-    x: [0, 'apple'.length - 1],
-    y: [0, 0],
-    o: 'horizontal'
-  }, {
-    w: 'grape',
-    x: [0, 'grape'.length - 1],
-    y: [0, 0],
-    o: 'horizontal'
-  }),
-  'collision not detected'
-);
-assert.ok(
-  collide({
-    w: 'apple',
-    x: [0, 'apple'.length - 1],
-    y: [0, 'apple'.length - 1],
-    o: 'transversal'
-  }, {
-    w: 'banana',
-    x: [0, 'banana'.length - 1],
-    y: [3, 3],
-    o: 'horizontal',
-  }),
-  'collision not detected for transversal'
-);
-assert.ok(
-  collide({
-    w: 'apple',
-    x: [1, 1],
-    y: [1, 'apple'.length - 1],
-    o: 'vertical',
-  }, {
-    w: 'grape',
-    x: [2, 'grape'.length - 1],
-    y: [2, 2],
-    o: 'horizontal'
-  }),
-  'collision not detected'
-);
+// assert.ok(
+//   collide({
+//     w: 'apple',
+//     x: [0, 'apple'.length - 1],
+//     y: [0, 0],
+//     o: 'horizontal'
+//   }, {
+//     w: 'grape',
+//     x: [0, 'grape'.length - 1],
+//     y: [0, 0],
+//     o: 'horizontal'
+//   }),
+//   'collision not detected'
+// );
+// assert.ok(
+//   collide({
+//     w: 'apple',
+//     x: [0, 'apple'.length - 1],
+//     y: [0, 'apple'.length - 1],
+//     o: 'transversal'
+//   }, {
+//     w: 'banana',
+//     x: [0, 'banana'.length - 1],
+//     y: [3, 3],
+//     o: 'horizontal',
+//   }),
+//   'collision not detected for transversal'
+// );
+// assert.ok(
+//   collide({
+//     w: 'apple',
+//     x: [1, 1],
+//     y: [1, 'apple'.length - 1],
+//     o: 'vertical',
+//   }, {
+//     w: 'grape',
+//     x: [2, 'grape'.length - 1],
+//     y: [2, 2],
+//     o: 'horizontal'
+//   }),
+//   'collision not detected'
+// );
 
 let grid = generateColumn(gridLimit(bag) + GS, gridLimit(bag) + GS);
 
@@ -316,7 +307,9 @@ bag.forEach(w => {
         }).length > 0;
     }
 
-    console.log(w, x, y, o, hasCollision);
+    if (!module.parent) {
+      console.log(w, x, y, o, hasCollision);
+    }
 
     if (hasCollision) {
       return prepareCells();
@@ -345,4 +338,6 @@ bag.forEach(w => {
   prepareCells();
 });
 
-showGrid(grid);
+if (!module.parent) {
+  showGrid(grid);
+}
