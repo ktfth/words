@@ -100,48 +100,7 @@ function placeCells(w, n, x, y, o, t) {
   }
   return out;
 }
-assert.deepEqual(placeCells('apple', 9, 0, 0, 'horizontal', 'left-to-right'), [
-  { value: 'a', x: 0, y: 0 },
-  { value: 'p', x: 1, y: 0 },
-  { value: 'p', x: 2, y: 0 },
-  { value: 'l', x: 3, y: 0 },
-  { value: 'e', x: 4, y: 0 },
-], 'horizontal placement');
-assert.deepEqual(placeCells('apple', 9, 0, 0, 'vertival', 'top-to-down'), [
-  { value: 'a', x: 0, y: 0 },
-  { value: 'p', x: 0, y: 1 },
-  { value: 'p', x: 0, y: 2 },
-  { value: 'l', x: 0, y: 3 },
-  { value: 'e', x: 0, y: 4 },
-], 'vertical placement');
-assert.deepEqual(placeCells('apple', 9, 0, 0, 'horizontal', 'right-to-left'), [
-  { value: 'e', x: 0, y: 0 },
-  { value: 'l', x: 1, y: 0 },
-  { value: 'p', x: 2, y: 0 },
-  { value: 'p', x: 3, y: 0 },
-  { value: 'a', x: 4, y: 0 },
-], 'horizontal placement right to left');
-assert.deepEqual(placeCells('apple', 9, 0, 0, 'vertical', 'down-to-top'), [
-  { value: 'e', x: 0, y: 0 },
-  { value: 'l', x: 0, y: 1 },
-  { value: 'p', x: 0, y: 2 },
-  { value: 'p', x: 0, y: 3 },
-  { value: 'a', x: 0, y: 4 },
-], 'vertical placement down to top');
-assert.deepEqual(placeCells('apple', 9, 0, 0, 'transversal', 'left-to-right'), [
-  { value: 'a', x: 0, y:0 },
-  { value: 'p', x: 1, y:1 },
-  { value: 'p', x: 2, y:2 },
-  { value: 'l', x: 3, y:3 },
-  { value: 'e', x: 4, y:4 },
-], 'transversal placement left to right');
-assert.deepEqual(placeCells('apple', 9, 0, 0, 'transversal', 'right-to-left'), [
-  { value: 'e', x: 0, y: 0 },
-  { value: 'l', x: 1, y: 1 },
-  { value: 'p', x: 2, y: 2 },
-  { value: 'p', x: 3, y: 3 },
-  { value: 'a', x: 4, y: 4 },
-], 'transversal placement right to left');
+exports.placeCells = placeCells;
 
 function range(n=0, m) {
   let out = [];
@@ -150,8 +109,7 @@ function range(n=0, m) {
   }
   return out;
 }
-assert.deepEqual(range(1, 3), [1, 2, 3]);
-assert.deepEqual(range(0, 2), [0, 1, 2]);
+exports.range = range;
 
 function collide(a, b) {
   let out = false;
@@ -161,21 +119,84 @@ function collide(a, b) {
   let bY = range(b.y[0], b.y[1]);
   let hasCollisionX = [];
   let hasCollisionY = [];
-  if (aX.length > bX.length) {
+
+  if (a.o === 'horizontal' && b.o === 'horizontal') {
     aX.forEach((v, i) => {
       if (bX[i] === v) hasCollisionX.push(true);
     });
-  } if (bX.length > aX.length) {
-    bX.forEach((v, i) => {
-      if (aX[i] === v) hasCollisionX.push(true);
-    });
-  } if (aY.length > bY.length) {
+
     aY.forEach((v, i) => {
       if (bY[i] === v) hasCollisionY.push(true);
     });
-  } if (bY.length > aY.length) {
-    bY.forEach((v, i) => {
-      if (aY[i] === v) hasCollisionY.push(true);
+  }
+
+  if (a.o === 'transversal' && b.o === 'horizontal') {
+    aX.forEach((v, i) => {
+      if (bX[i] === v) hasCollisionX.push(true);
+    });
+
+    aY.forEach((v, i) => {
+      if (bY[i] === v) hasCollisionY.push(true);
+    });
+  }
+
+  if (a.o === 'vertical' && b.o === 'horizontal') {
+    aX.forEach((v, vi) => {
+      bX.forEach((w, wi) => {
+        if (v === w) {
+          hasCollisionX.push(true);
+          bX = bX.splice(wi, 1);
+        }
+      });
+    });
+
+    aY.forEach((v, vi) => {
+      bY.forEach((w, wi) => {
+        if (v === w) {
+          hasCollisionY.push(true);
+          bY = bY.splice(wi, 1);
+        }
+      });
+    });
+  }
+
+  if (a.o === 'horizontal' && b.o === 'transversal') {
+    aX.forEach((v, vi) => {
+      bX.forEach((w, wi) => {
+        if (v === w) {
+          hasCollisionX.push(true);
+          bX = bX.splice(wi, 1);
+        }
+      });
+    });
+
+    aY.forEach((v, vi) => {
+      bY.forEach((w, wi) => {
+        if (v === w) {
+          hasCollisionY.push(true);
+          bY = bY.splice(wi, 1);
+        }
+      });
+    });
+  }
+
+  if (a.o === 'transversal' && b.o === 'vertical') {
+    aX.forEach((v, vi) => {
+      bX.forEach((w, wi) => {
+        if (v === w) {
+          hasCollisionX.push(true);
+          bX = bX.splice(wi, 1);
+        }
+      });
+    });
+
+    aY.forEach((v, vi) => {
+      bY.forEach((w, wi) => {
+        if (v === w) {
+          hasCollisionY.push(true);
+          bY = bY.splice(wi, 1);
+        }
+      });
     });
   }
 
@@ -184,48 +205,7 @@ function collide(a, b) {
   }
   return out;
 }
-// assert.ok(
-//   collide({
-//     w: 'apple',
-//     x: [0, 'apple'.length - 1],
-//     y: [0, 0],
-//     o: 'horizontal'
-//   }, {
-//     w: 'grape',
-//     x: [0, 'grape'.length - 1],
-//     y: [0, 0],
-//     o: 'horizontal'
-//   }),
-//   'collision not detected'
-// );
-// assert.ok(
-//   collide({
-//     w: 'apple',
-//     x: [0, 'apple'.length - 1],
-//     y: [0, 'apple'.length - 1],
-//     o: 'transversal'
-//   }, {
-//     w: 'banana',
-//     x: [0, 'banana'.length - 1],
-//     y: [3, 3],
-//     o: 'horizontal',
-//   }),
-//   'collision not detected for transversal'
-// );
-// assert.ok(
-//   collide({
-//     w: 'apple',
-//     x: [1, 1],
-//     y: [1, 'apple'.length - 1],
-//     o: 'vertical',
-//   }, {
-//     w: 'grape',
-//     x: [2, 'grape'.length - 1],
-//     y: [2, 2],
-//     o: 'horizontal'
-//   }),
-//   'collision not detected'
-// );
+exports.collide = collide;
 
 let grid = generateColumn(gridLimit(bag) + GS, gridLimit(bag) + GS);
 
