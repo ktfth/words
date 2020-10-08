@@ -120,85 +120,23 @@ function collide(a, b) {
   let hasCollisionX = [];
   let hasCollisionY = [];
 
-  if (a.o === 'horizontal' && b.o === 'horizontal') {
-    aX.forEach((v, i) => {
-      if (bX[i] === v) hasCollisionX.push(true);
+  aX.forEach((v, vi) => {
+    bX.forEach((w, wi) => {
+      if (v === w) {
+        hasCollisionX.push(true);
+        bX = bX.splice(wi, 1);
+      }
     });
+  });
 
-    aY.forEach((v, i) => {
-      if (bY[i] === v) hasCollisionY.push(true);
+  aY.forEach((v, vi) => {
+    bY.forEach((w, wi) => {
+      if (v === w) {
+        hasCollisionY.push(true);
+        bY = bY.splice(wi, 1);
+      }
     });
-  }
-
-  if (a.o === 'transversal' && b.o === 'horizontal') {
-    aX.forEach((v, i) => {
-      if (bX[i] === v) hasCollisionX.push(true);
-    });
-
-    aY.forEach((v, i) => {
-      if (bY[i] === v) hasCollisionY.push(true);
-    });
-  }
-
-  if (a.o === 'vertical' && b.o === 'horizontal') {
-    aX.forEach((v, vi) => {
-      bX.forEach((w, wi) => {
-        if (v === w) {
-          hasCollisionX.push(true);
-          bX = bX.splice(wi, 1);
-        }
-      });
-    });
-
-    aY.forEach((v, vi) => {
-      bY.forEach((w, wi) => {
-        if (v === w) {
-          hasCollisionY.push(true);
-          bY = bY.splice(wi, 1);
-        }
-      });
-    });
-  }
-
-  if (a.o === 'horizontal' && b.o === 'transversal') {
-    aX.forEach((v, vi) => {
-      bX.forEach((w, wi) => {
-        if (v === w) {
-          hasCollisionX.push(true);
-          bX = bX.splice(wi, 1);
-        }
-      });
-    });
-
-    aY.forEach((v, vi) => {
-      bY.forEach((w, wi) => {
-        if (v === w) {
-          hasCollisionY.push(true);
-          bY = bY.splice(wi, 1);
-        }
-      });
-    });
-  }
-
-  if (a.o === 'transversal' && b.o === 'vertical') {
-    aX.forEach((v, vi) => {
-      bX.forEach((w, wi) => {
-        if (v === w) {
-          hasCollisionX.push(true);
-          bX = bX.splice(wi, 1);
-        }
-      });
-    });
-
-    aY.forEach((v, vi) => {
-      bY.forEach((w, wi) => {
-        if (v === w) {
-          hasCollisionY.push(true);
-          bY = bY.splice(wi, 1);
-        }
-      });
-    });
-  }
+  });
 
   if (hasCollisionX.length > 0 || hasCollisionY.length > 0) {
     out = true;
