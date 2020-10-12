@@ -187,4 +187,21 @@ describe('Words', () => {
       'collision not detected for transversal by vertical'
     );
   });
+
+  it('should be detect collision: transversal by horizontal', () => {
+    assert.ok(
+      words.collide({
+        w: 'apple',
+        x: [0, 'apple'.length - 1],
+        y: [0, 'apple'.length - 1],
+        o: 'transversal'
+      }, {
+        w: 'banana',
+        x: [1, 'banana'.length - 1],
+        y: [1, 1],
+        o: 'horizontal'
+      }),
+      'collision not detected for transversal by horizontal'
+    );
+  });
 });
