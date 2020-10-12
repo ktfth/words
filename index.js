@@ -252,7 +252,7 @@ bag.forEach(w => {
       console.log(w, x, y, o, hasCollision);
     }
 
-    if (hasCollision && callStackCounter <= 6000) {
+    if (hasCollision && callStackCounter <= 10000) {
       callStackCounter += 1;
       return prepareCells();
     }
