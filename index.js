@@ -248,7 +248,7 @@ bag.forEach(w => {
         }).length > 0;
     }
 
-    if (!module.parent) {
+    if (!module.parent && process.env.DEBUG === 'WORDS') {
       console.log(w, x, y, o, hasCollision);
     }
 
