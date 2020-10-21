@@ -48,3 +48,15 @@ function hasCollisionY(a, b) {
 }
 assert.ok(hasCollisionY([1, 2, 3], [1, 2, 3]));
 assert.ok(!hasCollisionY([2, 2, 2], [3, 3, 3]));
+
+function collide(a, b) {
+  let aX = range(a.x[0], a.x[1]);
+  let bX = range(b.x[0], b.x[1]);
+  let aY = range(a.y[0], a.y[1]);
+  let bY = range(b.y[0], b.y[1]);
+  return hasCollisionX(aX, bX) || hasCollisionY(aY, bY);
+}
+exports.collide = collide;
+assert.ok(collide({ x: [0, 3], y: [1, 1] }, { x: [4, 6], y: [1, 1] }));
+assert.ok(collide({ x: [0, 4], y: [4, 4] }, { x: [0, 5], y: [0, 5] }));
+assert.ok(collide({ x: [0, 4], y: [2, 2] }, { x: [0, 5], y: [0, 5] }));
