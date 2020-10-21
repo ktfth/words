@@ -170,14 +170,14 @@ bag.forEach(w => {
         let b = {}; // current word
 
         if (o === 'horizontal') {
-          b.x = [x, x + (w.length)];
+          b.x = [x, x + (w.length - 1)];
           b.y = [y, y];
         } if (o === 'vertical') {
           b.x = [x, x];
-          b.y = [y, y + (w.length)];
+          b.y = [y, y + (w.length - 1)];
         } if (o === 'transversal') {
-          b.x = [x, x + (w.length)];
-          b.y = [y, y + (w.length)];
+          b.x = [x, x + (w.length - 1)];
+          b.y = [y, y + (w.length - 1)];
         }
 
         return collide(a, b);
@@ -187,7 +187,7 @@ bag.forEach(w => {
       console.log(w, x, y, o, hasCollision);
     }
 
-    if (hasCollision && callStackCounter <= 10000) {
+    if (hasCollision && callStackCounter <= 50000) {
       callStackCounter += 1;
       return prepareCells();
     }
