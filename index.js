@@ -162,19 +162,19 @@ bag.forEach(w => {
         if (o === 'horizontal') {
           b.x = [x, x + (w.length - 1)];
           b.y = [y, y];
-          if (b.x[1] > gs) {
+          if (b.x[1] > gs - 1) {
             return true;
           }
         } if (o === 'vertical') {
           b.x = [x, x];
           b.y = [y, y + (w.length - 1)];
-          if (b.y[1] > gs) {
+          if (b.y[1] > gs - 1) {
             return true;
           }
         } if (o === 'transversal') {
           b.x = [x, x + (w.length - 1)];
           b.y = [y, y + (w.length - 1)];
-          if (b.x[1] > gs || b.y[1] > gs) {
+          if (b.x[1] > gs - 1 || b.y[1] > gs - 1) {
             return true;
           }
         }
@@ -186,7 +186,7 @@ bag.forEach(w => {
   function prepareCells() {
     randomPos();
 
-    if (hasCollisionHandler() && callStackCounter <= 1000) {
+    if (hasCollisionHandler() && callStackCounter <= 60000) {
       callStackCounter += 1;
       return prepareCells();
     }
