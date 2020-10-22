@@ -133,7 +133,6 @@ let x = 0;
 let y = 0;
 let positionedWords = [];
 let callStackCounter = 0;
-let portion = 0;
 bag.forEach(w => {
   let gridSize = gridLimit(bag) + GS;
   let gs = gridSize;
@@ -162,19 +161,19 @@ bag.forEach(w => {
         if (o === 'horizontal') {
           b.x = [x, x + (w.length - 1)];
           b.y = [y, y];
-          if (b.x[1] >= gs - 1 || b.y[0] >= gs - 1) {
+          if (b.x[1] >= (gs - 1) || b.y[0] >= (gs - 1)) {
             return true;
           }
         } if (o === 'vertical') {
           b.x = [x, x];
           b.y = [y, y + (w.length - 1)];
-          if (b.y[1] >= gs - 1 || b.x[0] >= gs - 1) {
+          if (b.y[1] >= (gs - 1) || b.x[0] >= (gs - 1)) {
             return true;
           }
         } if (o === 'transversal') {
           b.x = [x, x + (w.length - 1)];
           b.y = [y, y + (w.length - 1)];
-          if (b.x[1] >= gs - 1 || b.y[1] >= gs - 1) {
+          if (b.x[1] >= (gs - 1) || b.y[1] >= (gs - 1)) {
             return true;
           }
         }
@@ -186,12 +185,16 @@ bag.forEach(w => {
   function prepareCells() {
     randomPos();
 
-    if (hasCollisionHandler() && callStackCounter <= 10000) {
-      callStackCounter += 1;
-      return prepareCells();
+    while (hasCollisionHandler()) {
+      randomPos();
     }
 
-    callStackCounter = 0;
+    // if (hasCollisionHandler() && callStackCounter <= 10000) {
+    //   callStackCounter += 1;
+    //   return prepareCells();
+    // }
+    //
+    // callStackCounter = 0;
 
     if (!module.parent && process.env.DEBUG === 'WORDS') {
       console.log(w, x, y, o, t);
