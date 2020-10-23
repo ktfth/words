@@ -183,6 +183,37 @@ bag.forEach(w => {
     }
     x = y = Math.max(0, Math.round(Math.random() * gs - 1));
 
+    hasCollision = positionedWords
+      .filter(pw => {
+        let a = {
+          x: pw.x,
+          y: pw.y,
+        }; // positioned word
+        let b = {}; // current word
+
+        if (o === 'horizontal') {
+          b.x = [x, x + (w.length - 1)];
+          b.y = [y, y];
+          if (b.x[1] >= (gs - 1) || b.y[0] >= (gs - 1)) {
+            return true;
+          }
+        } if (o === 'vertical') {
+          b.x = [x, x];
+          b.y = [y, y + (w.length - 1)];
+          if (b.y[1] >= (gs - 1) || b.x[0] >= (gs - 1)) {
+            return true;
+          }
+        } if (o === 'transversal') {
+          b.x = [x, x + (w.length - 1)];
+          b.y = [y, y + (w.length - 1)];
+          if (b.x[1] >= (gs - 1) || b.y[1] >= (gs - 1)) {
+            return true;
+          }
+        }
+
+        return collide(a, b);
+      }).length > 0;
+
     // if (!module.parent && process.env.DEBUG === 'WORDS') {
     //   console.log(w, x, y, o, t, hasCollisionHandler());
     // }
@@ -216,6 +247,7 @@ bag.forEach(w => {
     o: o,
     t: t,
   };
+
   if (o === 'horizontal') {
     p.x = [x, x + (w.length - 1)];
     p.y = [y, y];
