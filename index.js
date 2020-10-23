@@ -133,7 +133,7 @@ bag.forEach(w => {
   let o = null;
   let t = null;
 
-  let hasCollision = false;
+  // let hasCollision = false;
 
   o = orientation();
   if (o === 'horizontal' || o === 'transversal') {
@@ -141,89 +141,47 @@ bag.forEach(w => {
   } else if (o === 'vertical') {
     t = vTrace();
   }
-  x = y = Math.max(0, Math.round(Math.random() * gs - 1));
-
-  hasCollision = positionedWords
-    .filter(pw => {
-      let a = {
-        x: pw.x,
-        y: pw.y,
-      }; // positioned word
-      let b = {}; // current word
-
-      if (o === 'horizontal') {
-        b.x = [x, x + (w.length - 1)];
-        b.y = [y, y];
-        if (b.x[1] >= (gs - 1) || b.y[0] >= (gs - 1)) {
-          return true;
-        }
-      } if (o === 'vertical') {
-        b.x = [x, x];
-        b.y = [y, y + (w.length - 1)];
-        if (b.y[1] >= (gs - 1) || b.x[0] >= (gs - 1)) {
-          return true;
-        }
-      } if (o === 'transversal') {
-        b.x = [x, x + (w.length - 1)];
-        b.y = [y, y + (w.length - 1)];
-        if (b.x[1] >= (gs - 1) || b.y[1] >= (gs - 1)) {
-          return true;
-        }
-      }
-
-      return collide(a, b);
-    }).length > 0;
-
-  while (hasCollision) {
-    o = orientation();
-    if (o === 'horizontal' || o === 'transversal') {
-      t = htTrace();
-    } else if (o === 'vertical') {
-      t = vTrace();
-    }
-    x = y = Math.max(0, Math.round(Math.random() * gs - 1));
-
-    hasCollision = positionedWords
-      .filter(pw => {
-        let a = {
-          x: pw.x,
-          y: pw.y,
-        }; // positioned word
-        let b = {}; // current word
-
-        if (o === 'horizontal') {
-          b.x = [x, x + (w.length - 1)];
-          b.y = [y, y];
-          if (b.x[1] >= (gs - 1) || b.y[0] >= (gs - 1)) {
-            return true;
-          }
-        } if (o === 'vertical') {
-          b.x = [x, x];
-          b.y = [y, y + (w.length - 1)];
-          if (b.y[1] >= (gs - 1) || b.x[0] >= (gs - 1)) {
-            return true;
-          }
-        } if (o === 'transversal') {
-          b.x = [x, x + (w.length - 1)];
-          b.y = [y, y + (w.length - 1)];
-          if (b.x[1] >= (gs - 1) || b.y[1] >= (gs - 1)) {
-            return true;
-          }
-        }
-
-        return collide(a, b);
-      }).length > 0;
-
-    // if (!module.parent && process.env.DEBUG === 'WORDS') {
-    //   console.log(w, x, y, o, t, hasCollisionHandler());
+  function randomPos() {
+    let out = Math.max(0, Math.round(Math.random() * gs - 1));
+    if (out >= gs - 1 || out + w.length >= gs -1) return randomPos();
+    // for (let i = 0; i < positionedWords.length - 1; i += 1) {
+    //   let pw = positionedWords[i];
+    //   console.log(pw);
     // }
+    return out;
   }
+  x = y = randomPos();
 
-  // if (hasCollisionHandler() && callStackCounter <= 10000) {
-  //   callStackCounter += 1;
-  //   return prepareCells();
-  // }
+  // hasCollision = positionedWords
+  //   .filter(pw => {
+  //     let a = {
+  //       x: pw.x,
+  //       y: pw.y,
+  //     }; // positioned word
+  //     let b = {}; // current word
   //
+  //     if (o === 'horizontal') {
+  //       b.x = [x, x + (w.length - 1)];
+  //       b.y = [y, y];
+  //       if (b.x[1] >= (gs - 1) || b.y[0] >= (gs - 1)) {
+  //         return true;
+  //       }
+  //     } if (o === 'vertical') {
+  //       b.x = [x, x];
+  //       b.y = [y, y + (w.length - 1)];
+  //       if (b.y[1] >= (gs - 1) || b.x[0] >= (gs - 1)) {
+  //         return true;
+  //       }
+  //     } if (o === 'transversal') {
+  //       b.x = [x, x + (w.length - 1)];
+  //       b.y = [y, y + (w.length - 1)];
+  //       if (b.x[1] >= (gs - 1) || b.y[1] >= (gs - 1)) {
+  //         return true;
+  //       }
+  //     }
+  //
+  //     return collide(a, b);
+  //   }).length > 0;
 
   if (!module.parent && process.env.DEBUG === 'WORDS') {
     console.log(w, x, y, o, t);

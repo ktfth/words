@@ -61,3 +61,4 @@ exports.collide = collide;
 assert.ok(collide({ x: [0, 3], y: [1, 1] }, { x: [4, 6], y: [1, 1] }));
 assert.ok(collide({ x: [0, 4], y: [4, 4] }, { x: [0, 5], y: [0, 5] }));
 assert.ok(collide({ x: [0, 4], y: [2, 2] }, { x: [0, 5], y: [0, 5] }));
+assert.ok(!collide({ x: [0, 4], y: [2, 2] }, { x: [5, 10], y: [3, 3] }));
