@@ -144,10 +144,17 @@ bag.forEach(w => {
   function randomPos() {
     let out = Math.max(0, Math.round(Math.random() * gs - 1));
     if (out >= gs - 1 || out + w.length >= gs -1) return randomPos();
-    // for (let i = 0; i < positionedWords.length - 1; i += 1) {
-    //   let pw = positionedWords[i];
-    //   console.log(pw);
-    // }
+    for (let i = 0; i < positionedWords.length - 1; i += 1) {
+      let pw = positionedWords[i];
+      if (
+        (out >= pw.x[0] && out <= pw.x[1]) ||
+        (out >= pw.y[0] && out <= pw.y[1]) ||
+        ((out + (w.length - 1)) >= pw.x[0] && (out + (w.length - 1)) <= pw.x[1]) ||
+        ((out + (w.length - 1)) >= pw.y[0] && (out + (w.length - 1)) <= pw.y[1])
+      ) {
+        return randomPos();
+      }
+    }
     return out;
   }
   x = y = randomPos();
