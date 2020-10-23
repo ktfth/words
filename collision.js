@@ -6,6 +6,7 @@ function range(n, m) {
   for (let i = n; i <= m; i += 1) out.push(i);
   return out;
 }
+exports.range = range;
 assert.deepEqual(range(0, 10), [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 assert.deepEqual(range(1, 3), [1, 2, 3]);
 

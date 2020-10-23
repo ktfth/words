@@ -2,7 +2,7 @@
 const chalk = require('chalk');
 const assert = require('assert');
 
-const { collide } = require('./collision');
+const { collide, range } = require('./collision');
 
 const GS = 10; // Grid span
 
@@ -104,22 +104,18 @@ function placeCells(w, n, x, y, o, t) {
 }
 exports.placeCells = placeCells;
 
-function range(n=0, m) {
-  let out = [];
-  for (let i = n; i <= m; i += 1) {
-    out.push(i);
-  }
-  return out;
-}
 exports.range = range;
 
 exports.collide = collide;
 
 let grid = generateColumn(gridLimit(bag) + GS, gridLimit(bag) + GS);
+let gridSize = gridLimit(bag) + GS;
+let gs = gridSize;
 
 let orientations = ['horizontal', 'vertical', 'transversal'];
 let htTraces = ['left-to-right', 'right-to-left'];
 let vTraces = ['top-to-down', 'down-to-top'];
+let slots = range(0, gs - 1);
 let orientation = () => orientations[Math.max(0, Math.round(Math.random() * orientations.length - 1))];
 let htTrace = () => htTraces[Math.max(0, Math.round(Math.random() * (htTraces.length - 1)))];
 let vTrace = () => vTraces[Math.max(0, Math.round(Math.random() * (vTraces.length - 1)))];
@@ -129,27 +125,15 @@ function randint(n, m) {
 }
 
 // placing fixed words from bag
-let x = 0;
-let y = 0;
 let positionedWords = [];
 let callStackCounter = 0;
 bag.forEach(w => {
-  let gridSize = gridLimit(bag) + GS;
-  let gs = gridSize;
+  let x = 0;
+  let y = 0;
   let o = null;
   let t = null;
 
-  function randomPos() {
-    o = orientation();
-    if (o === 'horizontal' || o === 'transversal') {
-      t = htTrace();
-    } else if (o === 'vertical') {
-      t = vTrace();
-    }
-    x = y = randint(0, gs - 1);
-  }
-
-  function hasCollisionHandler() {
+  function hasCollisionHandler(currX, currY) {
     return positionedWords
       .filter(pw => {
         let a = {
@@ -159,20 +143,20 @@ bag.forEach(w => {
         let b = {}; // current word
 
         if (o === 'horizontal') {
-          b.x = [x, x + (w.length - 1)];
-          b.y = [y, y];
+          b.x = [currX, currX + (w.length - 1)];
+          b.y = [currY, currY];
           if (b.x[1] >= (gs - 1) || b.y[0] >= (gs - 1)) {
             return true;
           }
         } if (o === 'vertical') {
-          b.x = [x, x];
-          b.y = [y, y + (w.length - 1)];
+          b.x = [currX, currX];
+          b.y = [currY, currY + (w.length - 1)];
           if (b.y[1] >= (gs - 1) || b.x[0] >= (gs - 1)) {
             return true;
           }
         } if (o === 'transversal') {
-          b.x = [x, x + (w.length - 1)];
-          b.y = [y, y + (w.length - 1)];
+          b.x = [currX, currX + (w.length - 1)];
+          b.y = [currY, currY + (w.length - 1)];
           if (b.x[1] >= (gs - 1) || b.y[1] >= (gs - 1)) {
             return true;
           }
@@ -182,11 +166,25 @@ bag.forEach(w => {
       }).length > 0;
   }
 
-  function prepareCells() {
-    randomPos();
+  function randomWordPlace() {
+    o = orientation();
+    if (o === 'horizontal' || o === 'transversal') {
+      t = htTrace();
+    } else if (o === 'vertical') {
+      t = vTrace();
+    }
+    x = y = Math.max(0, Math.round(Math.random() * gs - 1));
+  }
 
-    while (hasCollisionHandler()) {
-      randomPos();
+  function prepareCells() {
+    randomWordPlace();
+
+    while (hasCollisionHandler(x, y)) {
+      randomWordPlace();
+
+      // if (!module.parent && process.env.DEBUG === 'WORDS') {
+      //   console.log(w, x, y, o, t, hasCollisionHandler());
+      // }
     }
 
     // if (hasCollisionHandler() && callStackCounter <= 10000) {
@@ -194,7 +192,6 @@ bag.forEach(w => {
     //   return prepareCells();
     // }
     //
-    // callStackCounter = 0;
 
     if (!module.parent && process.env.DEBUG === 'WORDS') {
       console.log(w, x, y, o, t);
@@ -229,6 +226,7 @@ bag.forEach(w => {
       p.y = [y, y + (w.length - 1)];
     }
     positionedWords.push(p);
+    slots = slots.splice(slots.indexOf(x), 1);
   }
   prepareCells();
 });
