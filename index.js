@@ -133,40 +133,48 @@ bag.forEach(w => {
   let o = null;
   let t = null;
 
-  function hasCollisionHandler(currX, currY) {
-    return positionedWords
-      .filter(pw => {
-        let a = {
-          x: pw.x,
-          y: pw.y,
-        }; // positioned word
-        let b = {}; // current word
+  let hasCollision = false;
 
-        if (o === 'horizontal') {
-          b.x = [currX, currX + (w.length - 1)];
-          b.y = [currY, currY];
-          if (b.x[1] >= (gs - 1) || b.y[0] >= (gs - 1)) {
-            return true;
-          }
-        } if (o === 'vertical') {
-          b.x = [currX, currX];
-          b.y = [currY, currY + (w.length - 1)];
-          if (b.y[1] >= (gs - 1) || b.x[0] >= (gs - 1)) {
-            return true;
-          }
-        } if (o === 'transversal') {
-          b.x = [currX, currX + (w.length - 1)];
-          b.y = [currY, currY + (w.length - 1)];
-          if (b.x[1] >= (gs - 1) || b.y[1] >= (gs - 1)) {
-            return true;
-          }
-        }
-
-        return collide(a, b);
-      }).length > 0;
+  o = orientation();
+  if (o === 'horizontal' || o === 'transversal') {
+    t = htTrace();
+  } else if (o === 'vertical') {
+    t = vTrace();
   }
+  x = y = Math.max(0, Math.round(Math.random() * gs - 1));
 
-  function randomWordPlace() {
+  hasCollision = positionedWords
+    .filter(pw => {
+      let a = {
+        x: pw.x,
+        y: pw.y,
+      }; // positioned word
+      let b = {}; // current word
+
+      if (o === 'horizontal') {
+        b.x = [x, x + (w.length - 1)];
+        b.y = [y, y];
+        if (b.x[1] >= (gs - 1) || b.y[0] >= (gs - 1)) {
+          return true;
+        }
+      } if (o === 'vertical') {
+        b.x = [x, x];
+        b.y = [y, y + (w.length - 1)];
+        if (b.y[1] >= (gs - 1) || b.x[0] >= (gs - 1)) {
+          return true;
+        }
+      } if (o === 'transversal') {
+        b.x = [x, x + (w.length - 1)];
+        b.y = [y, y + (w.length - 1)];
+        if (b.x[1] >= (gs - 1) || b.y[1] >= (gs - 1)) {
+          return true;
+        }
+      }
+
+      return collide(a, b);
+    }).length > 0;
+
+  while (hasCollision) {
     o = orientation();
     if (o === 'horizontal' || o === 'transversal') {
       t = htTrace();
@@ -174,61 +182,51 @@ bag.forEach(w => {
       t = vTrace();
     }
     x = y = Math.max(0, Math.round(Math.random() * gs - 1));
-  }
 
-  function prepareCells() {
-    randomWordPlace();
-
-    while (hasCollisionHandler(x, y)) {
-      randomWordPlace();
-
-      // if (!module.parent && process.env.DEBUG === 'WORDS') {
-      //   console.log(w, x, y, o, t, hasCollisionHandler());
-      // }
-    }
-
-    // if (hasCollisionHandler() && callStackCounter <= 10000) {
-    //   callStackCounter += 1;
-    //   return prepareCells();
+    // if (!module.parent && process.env.DEBUG === 'WORDS') {
+    //   console.log(w, x, y, o, t, hasCollisionHandler());
     // }
-    //
-
-    if (!module.parent && process.env.DEBUG === 'WORDS') {
-      console.log(w, x, y, o, t);
-    }
-
-    placeCells(w, gs, x, y, o, t)
-      .forEach(v => {
-        if (process.env.DEBUG === 'WORDS') {
-          if (grid[v['y']] !== undefined && grid[v['y']][v['x']] !== undefined) {
-            grid[v['y']][v['x']] = chalk.green(v['value'].toUpperCase());
-          }
-        } else {
-          if (grid[v['y']] !== undefined && grid[v['y']][v['x']] !== undefined) {
-            grid[v['y']][v['x']] = v['value'];
-          }
-        }
-      });
-
-    let p = {
-      word: w,
-      o: o,
-      t: t,
-    };
-    if (o === 'horizontal') {
-      p.x = [x, x + (w.length - 1)];
-      p.y = [y, y];
-    } if (o === 'vertical') {
-      p.x = [x, x];
-      p.y = [y, y + (w.length - 1)];
-    } if (o === 'transversal') {
-      p.x = [x, x + (w.length - 1)];
-      p.y = [y, y + (w.length - 1)];
-    }
-    positionedWords.push(p);
-    slots = slots.splice(slots.indexOf(x), 1);
   }
-  prepareCells();
+
+  // if (hasCollisionHandler() && callStackCounter <= 10000) {
+  //   callStackCounter += 1;
+  //   return prepareCells();
+  // }
+  //
+
+  if (!module.parent && process.env.DEBUG === 'WORDS') {
+    console.log(w, x, y, o, t);
+  }
+
+  placeCells(w, gs, x, y, o, t)
+    .forEach(v => {
+      if (process.env.DEBUG === 'WORDS') {
+        if (grid[v['y']] !== undefined && grid[v['y']][v['x']] !== undefined) {
+          grid[v['y']][v['x']] = chalk.green(v['value'].toUpperCase());
+        }
+      } else {
+        if (grid[v['y']] !== undefined && grid[v['y']][v['x']] !== undefined) {
+          grid[v['y']][v['x']] = v['value'];
+        }
+      }
+    });
+
+  let p = {
+    word: w,
+    o: o,
+    t: t,
+  };
+  if (o === 'horizontal') {
+    p.x = [x, x + (w.length - 1)];
+    p.y = [y, y];
+  } if (o === 'vertical') {
+    p.x = [x, x];
+    p.y = [y, y + (w.length - 1)];
+  } if (o === 'transversal') {
+    p.x = [x, x + (w.length - 1)];
+    p.y = [y, y + (w.length - 1)];
+  }
+  positionedWords.push(p);
 });
 
 if (!module.parent) {
