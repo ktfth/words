@@ -4,7 +4,7 @@ const assert = require('assert');
 
 const { collide } = require('./collision');
 
-const GS = 20; // Grid span
+const GS = 40; // Grid span
 
 let bag = [
   'apple',
