@@ -2,9 +2,9 @@
 const chalk = require('chalk');
 const assert = require('assert');
 
-const { collide, range } = require('./collision');
+const { collide } = require('./collision');
 
-const GS = 10; // Grid span
+const GS = 20; // Grid span
 
 let bag = [
   'apple',
@@ -104,10 +104,6 @@ function placeCells(w, n, x, y, o, t) {
 }
 exports.placeCells = placeCells;
 
-exports.range = range;
-
-exports.collide = collide;
-
 let grid = generateColumn(gridLimit(bag) + GS, gridLimit(bag) + GS);
 let gridSize = gridLimit(bag) + GS;
 let gs = gridSize;
@@ -115,7 +111,6 @@ let gs = gridSize;
 let orientations = ['horizontal', 'vertical', 'transversal'];
 let htTraces = ['left-to-right', 'right-to-left'];
 let vTraces = ['top-to-down', 'down-to-top'];
-let slots = range(0, gs - 1);
 let orientation = () => orientations[Math.max(0, Math.round(Math.random() * orientations.length - 1))];
 let htTrace = () => htTraces[Math.max(0, Math.round(Math.random() * (htTraces.length - 1)))];
 let vTrace = () => vTraces[Math.max(0, Math.round(Math.random() * (vTraces.length - 1)))];
@@ -141,54 +136,40 @@ bag.forEach(w => {
   } else if (o === 'vertical') {
     t = vTrace();
   }
+
+  function hasCollision(out) {
+    if (out >= gs - 1 || out + (w.length - 1) >= gs - 1) return true;
+    return positionedWords
+      .filter(pw => {
+        let a = {};
+        let b = {
+          x: pw.x,
+          y: pw.y
+        };
+
+        if (o === 'horizontal') {
+          a.x = [out, out + (w.length - 1)],
+          a.y = [out, out];
+        } else if (o === 'vertical') {
+          a.x = [out, out];
+          a.y = [out, out + (w.length - 1)];
+        } else if (o === 'transversal') {
+          a.x = [out, out + (w.length - 1)];
+          a.y = [out, out + (w.length - 1)];
+        }
+
+        return collide(a, b);
+      }).length > 0;
+  }
+
   function randomPos() {
     let out = Math.max(0, Math.round(Math.random() * gs - 1));
-    if (out >= gs - 1 || out + w.length >= gs -1) return randomPos();
-    for (let i = 0; i < positionedWords.length - 1; i += 1) {
-      let pw = positionedWords[i];
-      if (
-        (out >= pw.x[0] && out <= pw.x[1]) ||
-        (out >= pw.y[0] && out <= pw.y[1]) ||
-        ((out + (w.length - 1)) >= pw.x[0] && (out + (w.length - 1)) <= pw.x[1]) ||
-        ((out + (w.length - 1)) >= pw.y[0] && (out + (w.length - 1)) <= pw.y[1])
-      ) {
-        return randomPos();
-      }
+    while (hasCollision(out)) {
+      out = Math.max(0, Math.round(Math.random() * gs - 1));
     }
     return out;
   }
   x = y = randomPos();
-
-  // hasCollision = positionedWords
-  //   .filter(pw => {
-  //     let a = {
-  //       x: pw.x,
-  //       y: pw.y,
-  //     }; // positioned word
-  //     let b = {}; // current word
-  //
-  //     if (o === 'horizontal') {
-  //       b.x = [x, x + (w.length - 1)];
-  //       b.y = [y, y];
-  //       if (b.x[1] >= (gs - 1) || b.y[0] >= (gs - 1)) {
-  //         return true;
-  //       }
-  //     } if (o === 'vertical') {
-  //       b.x = [x, x];
-  //       b.y = [y, y + (w.length - 1)];
-  //       if (b.y[1] >= (gs - 1) || b.x[0] >= (gs - 1)) {
-  //         return true;
-  //       }
-  //     } if (o === 'transversal') {
-  //       b.x = [x, x + (w.length - 1)];
-  //       b.y = [y, y + (w.length - 1)];
-  //       if (b.x[1] >= (gs - 1) || b.y[1] >= (gs - 1)) {
-  //         return true;
-  //       }
-  //     }
-  //
-  //     return collide(a, b);
-  //   }).length > 0;
 
   if (!module.parent && process.env.DEBUG === 'WORDS') {
     console.log(w, x, y, o, t);
