@@ -76,25 +76,25 @@ function placeCells(w, n, x, y, o, t) {
     for (let i = 0; i < w.length; i += 1) {
       out.push({ value: w[i], x: x + i, y: y });
     }
-  } else if (w.length <= n && o === 'horizontal' && t === 'right-to-left') {
+  } if (w.length <= n && o === 'horizontal' && t === 'right-to-left') {
     for (let i = w.length - 1, j = 0; i >= 0; i -= 1) {
       out.push({ value: w[i], x: x + j, y: y });
       j += 1;
     }
-  } else if (w.length <= n && o === 'vertival' && t === 'top-to-down') {
+  } if (w.length <= n && o === 'vertical' && t === 'top-to-down') {
     for (let i = 0; i < w.length; i += 1) {
       out.push({ value: w[i], x: x, y: y + i });
     }
-  } else if (w.length <= n && o === 'vertical' && t === 'down-to-top') {
+  } if (w.length <= n && o === 'vertical' && t === 'down-to-top') {
     for (let i = w.length - 1, j = 0; i >= 0; i -= 1) {
       out.push({ value: w[i], x: x, y: y + j });
       j += 1;
     }
-  } else if (w.length <= n && o === 'transversal' && t === 'left-to-right') {
+  } if (w.length <= n && o === 'transversal' && t === 'left-to-right') {
     for (let i = 0; i < w.length; i += 1) {
       out.push({ value: w[i], x: x + i, y: y + i });
     }
-  } else if (w.length <= n && o === 'transversal' && t === 'right-to-left') {
+  } if (w.length <= n && o === 'transversal' && t === 'right-to-left') {
     for (let i = w.length - 1, j = 0; i >= 0; i -= 1) {
       out.push({ value: w[i], x: x + j, y: y + j });
       j += 1;
@@ -122,24 +122,26 @@ function randint(n, m) {
 // placing fixed words from bag
 let positionedWords = [];
 let callStackCounter = 0;
-bag.forEach(w => {
-  let x = 0;
-  let y = 0;
-  let o = null;
-  let t = null;
+function placementCells() {
+  for (let i = 0; i < bag.length; i += 1) {
+    let w = bag[i];
+    let x = 0;
+    let y = 0;
+    let o = null;
+    let t = null;
 
-  // let hasCollision = false;
+    // let hasCollision = false;
 
-  o = orientation();
-  if (o === 'horizontal' || o === 'transversal') {
-    t = htTrace();
-  } else if (o === 'vertical') {
-    t = vTrace();
-  }
+    o = orientation();
+    if (o === 'horizontal' || o === 'transversal') {
+      t = htTrace();
+    } else if (o === 'vertical') {
+      t = vTrace();
+    }
 
-  function hasCollision(out) {
-    if (out >= gs - 1 || out + (w.length - 1) >= gs - 1) return true;
-    return positionedWords
+    function hasCollision(out) {
+      if (out >= gs - 1 || out + (w.length - 1) >= gs - 1) return true;
+      return positionedWords
       .filter(pw => {
         let a = {};
         let b = {
@@ -160,52 +162,61 @@ bag.forEach(w => {
 
         return collide(a, b);
       }).length > 0;
-  }
-
-  function randomPos() {
-    let out = Math.max(0, Math.round(Math.random() * gs - 1));
-    while (hasCollision(out)) {
-      out = Math.max(0, Math.round(Math.random() * gs - 1));
     }
-    return out;
-  }
-  x = y = randomPos();
 
-  if (!module.parent && process.env.DEBUG === 'WORDS') {
-    console.log(w, x, y, o, t);
-  }
+    function randomPos() {
+      let out = Math.max(0, Math.round(Math.random() * gs - 1));
+      while (hasCollision(out)) {
+        out = Math.max(0, Math.round(Math.random() * gs - 1));
+      }
+      return out;
+    }
+    x = y = randomPos();
 
-  placeCells(w, gs, x, y, o, t)
-    .forEach(v => {
+    if (!module.parent && process.env.DEBUG === 'WORDS') {
+      console.log(w, x, y, o, t);
+    }
+
+    let place = placeCells(w, gs - 1, x, y, o, t)
+
+    for (let i = 0; i < place.length; i += 1) {
+      let v = place[i];
       if (process.env.DEBUG === 'WORDS') {
         if (grid[v['y']] !== undefined && grid[v['y']][v['x']] !== undefined) {
           grid[v['y']][v['x']] = chalk.green(v['value'].toUpperCase());
+        } else {
+          return placementCells();
         }
       } else {
         if (grid[v['y']] !== undefined && grid[v['y']][v['x']] !== undefined) {
           grid[v['y']][v['x']] = v['value'];
+        } else {
+          return placementCells();
         }
       }
-    });
+    }
 
-  let p = {
-    word: w,
-    o: o,
-    t: t,
-  };
+    let p = {
+      word: w,
+      o: o,
+      t: t,
+    };
 
-  if (o === 'horizontal') {
-    p.x = [x, x + (w.length - 1)];
-    p.y = [y, y];
-  } if (o === 'vertical') {
-    p.x = [x, x];
-    p.y = [y, y + (w.length - 1)];
-  } if (o === 'transversal') {
-    p.x = [x, x + (w.length - 1)];
-    p.y = [y, y + (w.length - 1)];
+    if (o === 'horizontal') {
+      p.x = [x, x + (w.length - 1)];
+      p.y = [y, y];
+    } if (o === 'vertical') {
+      p.x = [x, x];
+      p.y = [y, y + (w.length - 1)];
+    } if (o === 'transversal') {
+      p.x = [x, x + (w.length - 1)];
+      p.y = [y, y + (w.length - 1)];
+    }
+
+    positionedWords.push(p);
   }
-  positionedWords.push(p);
-});
+}
+placementCells();
 
 if (!module.parent) {
   showGrid(grid);
